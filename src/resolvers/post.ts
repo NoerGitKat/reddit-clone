@@ -8,13 +8,13 @@ export class PostResolver {
   // GraphQL type
   @Query(() => [Post])
   // TypeScript type
-  posts(@Ctx() { em }: MyContext): Promise<Post[]> {
+  getAllPosts(@Ctx() { em }: MyContext): Promise<Post[]> {
     return em.find(Post, {});
   }
 
   /* CRUD: Read a post */
   @Query(() => Post, { nullable: true })
-  post(
+  getSinglePost(
     @Arg("id", () => Int) id: number,
     @Ctx() { em }: MyContext
   ): Promise<Post | null> {

@@ -97,7 +97,7 @@ let UserResolver = class UserResolver {
             return { user: newUser };
         });
     }
-    loginUser(username, password, { em }) {
+    loginUser(username, password, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             const foundUser = yield em.findOne(User_1.User, { username });
             if (!foundUser) {
@@ -113,6 +113,7 @@ let UserResolver = class UserResolver {
                     errors: [{ field: "password", message: "Password is incorrect!" }],
                 };
             }
+            req.session.userId = foundUser.id;
             return { user: foundUser };
         });
     }

@@ -89,7 +89,7 @@ export class UserResolver {
   async loginUser(
     @Arg("username", () => String) username: string,
     @Arg("password", () => String) password: string,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const foundUser = await em.findOne(User, { username });
     // Validation
@@ -106,6 +106,9 @@ export class UserResolver {
         errors: [{ field: "password", message: "Password is incorrect!" }],
       };
     }
+
+    // Set user ID in session
+    req.session.userId = foundUser.id;
 
     return { user: foundUser };
   }

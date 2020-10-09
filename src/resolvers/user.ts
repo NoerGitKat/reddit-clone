@@ -34,6 +34,20 @@ export class UserResolver {
   users() {}
 
   @Query(() => User, { nullable: true })
+  async getLoggedInUser(@Ctx() { em, req }: MyContext) {
+console.log('session info', req.session)
+    
+    
+    // If user is not logged in
+    if (!req.session.userId) {
+      return null;
+    }
+
+    const user = await em.findOne(User, { id: req.session.userId });
+    return user;
+  }
+
+  @Query(() => User, { nullable: true })
   async getUser(
     @Arg("id", () => Number) id: number,
     @Ctx() { em }: MyContext
@@ -49,7 +63,7 @@ export class UserResolver {
   async createUser(
     @Arg("username", () => String) username: string,
     @Arg("password", () => String) password: string,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     // Validation
     if (username.length <= 2) {
@@ -81,7 +95,13 @@ export class UserResolver {
       username,
       password: hashedPassword,
     });
+
+    // Store in DB
     await em.persistAndFlush(newUser);
+
+    // Auto-login
+    req.session.userId = newUser.id
+    
     return { user: newUser };
   }
 

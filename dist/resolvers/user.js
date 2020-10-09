@@ -56,6 +56,16 @@ UserResponse = __decorate([
 ], UserResponse);
 let UserResolver = class UserResolver {
     users() { }
+    getLoggedInUser({ em, req }) {
+        return __awaiter(this, void 0, void 0, function* () {
+            console.log('session info', req.session);
+            if (!req.session.userId) {
+                return null;
+            }
+            const user = yield em.findOne(User_1.User, { id: req.session.userId });
+            return user;
+        });
+    }
     getUser(id, { em }) {
         return __awaiter(this, void 0, void 0, function* () {
             const foundUser = yield em.findOne(User_1.User, { id });
@@ -65,7 +75,7 @@ let UserResolver = class UserResolver {
             return foundUser;
         });
     }
-    createUser(username, password, { em }) {
+    createUser(username, password, { em, req }) {
         return __awaiter(this, void 0, void 0, function* () {
             if (username.length <= 2) {
                 return {
@@ -94,6 +104,7 @@ let UserResolver = class UserResolver {
                 password: hashedPassword,
             });
             yield em.persistAndFlush(newUser);
+            req.session.userId = newUser.id;
             return { user: newUser };
         });
     }
@@ -126,6 +137,13 @@ __decorate([
     __metadata("design:paramtypes", []),
     __metadata("design:returntype", void 0)
 ], UserResolver.prototype, "users", null);
+__decorate([
+    type_graphql_1.Query(() => User_1.User, { nullable: true }),
+    __param(0, type_graphql_1.Ctx()),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [Object]),
+    __metadata("design:returntype", Promise)
+], UserResolver.prototype, "getLoggedInUser", null);
 __decorate([
     type_graphql_1.Query(() => User_1.User, { nullable: true }),
     __param(0, type_graphql_1.Arg("id", () => Number)),

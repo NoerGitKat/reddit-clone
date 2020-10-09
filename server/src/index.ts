@@ -1,8 +1,10 @@
 import "reflect-metadata";
+import express from "express";
+import cors from 'cors'
+
 import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from "./constants";
 import microConfig from "./mikro-orm.config";
-import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { PostResolver } from "./resolvers/post";
@@ -13,7 +15,6 @@ const PORT = process.env.PORT || 4000;
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
-import { MyContext } from "./types";
 
 const main = async () => {
   // Init MikroORM
@@ -26,6 +27,12 @@ const main = async () => {
   // Instantiate Redis connection
   let RedisStore = connectRedis(session);
   let redisClient = redis.createClient();
+
+  // Enable cors globally
+  app.use(cors({
+    origin: 'http://localhost:3000',
+    credentials: true
+  }))
 
   // Connect Express with Redis conecction
   app.use(
@@ -50,11 +57,11 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }) => ({ em: orm.em, req, res }),
   });
 
   // Connect Express with GraphQL
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(PORT, () => {
     console.log(`The server is running on port: ${PORT}`);

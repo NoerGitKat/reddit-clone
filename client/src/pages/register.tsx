@@ -1,4 +1,5 @@
 import React from "react";
+import { useMutation } from "urql";
 
 import Container from "./../components/Container";
 import InputField from "./../components/InputField";
@@ -7,14 +8,31 @@ import { Button, FormControl, FormLabel, Input } from "@chakra-ui/core";
 
 interface registerProps {}
 
+const REGISTER_MUTATION = `mutation CreateUser($username: String!, $password: String!) {
+  createUser(username: $username, password: $password){
+    errors {
+      field
+      message
+    }
+    user {
+      id
+      createdAt
+      updatedAt
+      username
+    }
+  }
+}`;
+
 const Register: React.FC<registerProps> = ({}) => {
+  const [{}, register] = useMutation(REGISTER_MUTATION);
+
   const initValues = {
     username: "",
     password: "",
   };
 
   const handleSubmit = (values) => {
-    console.log(values);
+    register({ username: values.username, password: values.password });
   };
 
   return (

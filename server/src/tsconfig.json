@@ -24,5 +24,5 @@
     "baseUrl": "."
   },
   "exclude": ["node_modules"],
-  "include": ["server/src/**/*.tsx", "server/src/**/*.ts"]
+  "include": ["./src/**/*.tsx", "./src/**/*.ts"]
 }

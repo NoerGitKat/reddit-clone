@@ -1,38 +1,30 @@
 import React from "react";
-import { useMutation } from "urql";
 
 import Container from "./../components/Container";
 import InputField from "./../components/InputField";
 import { Formik, Form } from "formik";
-import { Button, FormControl, FormLabel, Input } from "@chakra-ui/core";
+import { Button } from "@chakra-ui/core";
+import { useCreateUserMutation } from "../generated/graphql";
+import { toErrorMap } from "../utils/toErrorMap";
 
 interface registerProps {}
 
-const REGISTER_MUTATION = `mutation CreateUser($username: String!, $password: String!) {
-  createUser(username: $username, password: $password){
-    errors {
-      field
-      message
-    }
-    user {
-      id
-      createdAt
-      updatedAt
-      username
-    }
-  }
-}`;
-
 const Register: React.FC<registerProps> = ({}) => {
-  const [{}, register] = useMutation(REGISTER_MUTATION);
+  const [{}, register] = useCreateUserMutation();
 
   const initValues = {
     username: "",
     password: "",
   };
 
-  const handleSubmit = (values) => {
-    register({ username: values.username, password: values.password });
+  const handleSubmit = async (values, { setErrors }) => {
+    const response = await register({
+      username: values.username,
+      password: values.password,
+    });
+    if (response.data?.createUser.errors) {
+      setErrors(toErrorMap(response.data.createUser.errors));
+    }
   };
 
   return (

@@ -4,7 +4,7 @@ const client = createClient({ url: "http://localhost:4000/graphql" });
 
 import theme from "../theme";
 
-function MyApp({ Component, pageProps }) {
+function MyApp({ Component, pageProps }: any) {
   return (
     <Provider value={client}>
       <ThemeProvider theme={theme}>

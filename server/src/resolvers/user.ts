@@ -1,5 +1,5 @@
 import { User } from "./../entities/User";
-import { MyContext } from "src/types";
+import { MyContext } from "./../types";
 import {
   Arg,
   Ctx,
@@ -36,8 +36,6 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async getLoggedInUser(@Ctx() { em, req }: MyContext) {
-    console.log("session info", req.session);
-
     // If user is not logged in
     if (!req.session.userId) {
       return null;

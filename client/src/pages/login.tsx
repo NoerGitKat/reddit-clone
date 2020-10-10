@@ -1,30 +1,30 @@
 import React from "react";
 import { useRouter } from "next/router";
-
-import Container from "./../components/Container";
-import InputField from "./../components/InputField";
-import { Formik, Form } from "formik";
 import { Button } from "@chakra-ui/core";
-import { useCreateUserMutation } from "../generated/graphql";
+import { Formik, Form } from "formik";
+import Container from "../components/Container";
+import InputField from "../components/InputField";
+
 import { toErrorMap } from "../utils/toErrorMap";
+import { useLoginUserMutation } from "../generated/graphql";
 
-const Register: React.FC<{}> = ({}) => {
+const Login: React.FC<{}> = ({}) => {
   const router = useRouter();
-  const [{}, register] = useCreateUserMutation();
-
   const initValues = {
     username: "",
     password: "",
   };
 
+  const [{}, login] = useLoginUserMutation();
+
   const handleSubmit = async (values, { setErrors }) => {
-    const response = await register({
+    const response = await login({
       username: values.username,
       password: values.password,
     });
-    if (response.data?.createUser.errors) {
-      setErrors(toErrorMap(response.data.createUser.errors));
-    } else if (response.data?.createUser.user) {
+    if (response.data?.loginUser.errors) {
+      setErrors(toErrorMap(response.data.loginUser.errors));
+    } else if (response.data?.loginUser.user) {
       // Success! Route to homepage
       router.push("/");
     }
@@ -54,7 +54,7 @@ const Register: React.FC<{}> = ({}) => {
                 isLoading={isSubmitting}
                 variantColor="teal"
               >
-                Register
+                Login
               </Button>
             </Form>
           );
@@ -64,4 +64,4 @@ const Register: React.FC<{}> = ({}) => {
   );
 };
 
-export default Register;
+export default Login;

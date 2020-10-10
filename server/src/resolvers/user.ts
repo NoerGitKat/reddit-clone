@@ -112,7 +112,7 @@ export class UserResolver {
       req.session.userId = newUser.id;
 
       return { user: newUser };
-    } catch (error: any) {
+    } catch (error) {
       return {
         errors: [
           {

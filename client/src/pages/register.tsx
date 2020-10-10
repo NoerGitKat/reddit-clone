@@ -1,4 +1,5 @@
 import React from "react";
+import { useRouter } from "next/router";
 
 import Container from "./../components/Container";
 import InputField from "./../components/InputField";
@@ -10,6 +11,7 @@ import { toErrorMap } from "../utils/toErrorMap";
 interface registerProps {}
 
 const Register: React.FC<registerProps> = ({}) => {
+  const router = useRouter();
   const [{}, register] = useCreateUserMutation();
 
   const initValues = {
@@ -24,13 +26,16 @@ const Register: React.FC<registerProps> = ({}) => {
     });
     if (response.data?.createUser.errors) {
       setErrors(toErrorMap(response.data.createUser.errors));
+    } else if (response.data?.createUser.user) {
+      // Success! Route to homepage
+      router.push("/");
     }
   };
 
   return (
     <Container variant="small">
       <Formik initialValues={initValues} onSubmit={handleSubmit}>
-        {(values, handleChange, isSubmitting) => {
+        {({ isSubmitting }) => {
           return (
             <Form>
               <InputField

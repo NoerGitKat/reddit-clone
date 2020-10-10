@@ -10,6 +10,7 @@ import {
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
+import { EntityManager } from "@mikro-orm/postgresql";
 
 @ObjectType()
 class FieldError {
@@ -35,9 +36,8 @@ export class UserResolver {
 
   @Query(() => User, { nullable: true })
   async getLoggedInUser(@Ctx() { em, req }: MyContext) {
-console.log('session info', req.session)
-    
-    
+    console.log("session info", req.session);
+
     // If user is not logged in
     if (!req.session.userId) {
       return null;
@@ -78,31 +78,52 @@ console.log('session info', req.session)
       };
     }
 
-    const foundUser = await em.findOne(User, { username });
-    if (foundUser) {
+    try {
+      const foundUser = await em.findOne(User, { username });
+      if (foundUser) {
+        return {
+          errors: [
+            {
+              field: "",
+              message: "User already exists.",
+            },
+          ],
+        };
+      }
+
+      const hashedPassword = await argon2.hash(password);
+      // const newUser = await em.create(User, {
+      //   username,
+      //   password: hashedPassword,
+      // });
+
+      // Store in DB
+      const [newUser] = await (em as EntityManager)
+        .createQueryBuilder(User)
+        .getKnexQuery()
+        .insert({
+          username,
+          password: hashedPassword,
+          created_at: new Date(),
+          updated_at: new Date(),
+        })
+        .returning("*");
+      // await em.persistAndFlush(newUser);
+
+      // Auto-login
+      req.session.userId = newUser.id;
+
+      return { user: newUser };
+    } catch (error: any) {
       return {
         errors: [
           {
             field: "",
-            message: "User already exists.",
+            message: "User couldn't be created.",
           },
         ],
       };
     }
-
-    const hashedPassword = await argon2.hash(password);
-    const newUser = await em.create(User, {
-      username,
-      password: hashedPassword,
-    });
-
-    // Store in DB
-    await em.persistAndFlush(newUser);
-
-    // Auto-login
-    req.session.userId = newUser.id
-    
-    return { user: newUser };
   }
 
   @Mutation(() => UserResponse)

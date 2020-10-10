@@ -138,6 +138,17 @@ export type CreateUserMutation = (
   ) }
 );
 
+export type GetLoggedInUserQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetLoggedInUserQuery = (
+  { __typename?: 'Query' }
+  & { getLoggedInUser?: Maybe<(
+    { __typename?: 'User' }
+    & Pick<User, 'id' | 'createdAt' | 'updatedAt' | 'username'>
+  )> }
+);
+
 
 export const LoginUserDocument = gql`
     mutation LoginUser($username: String!, $password: String!) {
@@ -178,4 +189,18 @@ export const CreateUserDocument = gql`
 
 export function useCreateUserMutation() {
   return Urql.useMutation<CreateUserMutation, CreateUserMutationVariables>(CreateUserDocument);
+};
+export const GetLoggedInUserDocument = gql`
+    query GetLoggedInUser {
+  getLoggedInUser {
+    id
+    createdAt
+    updatedAt
+    username
+  }
+}
+    `;
+
+export function useGetLoggedInUserQuery(options: Omit<Urql.UseQueryArgs<GetLoggedInUserQueryVariables>, 'query'> = {}) {
+  return Urql.useQuery<GetLoggedInUserQuery>({ query: GetLoggedInUserDocument, ...options });
 };

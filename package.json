@@ -8,6 +8,7 @@
     "dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
+    "migrate": "npx mikro-orm migration:up --run",
     "lint": "eslint . --ext ts --ext tsx",
     "prepare": "husky install"
   },

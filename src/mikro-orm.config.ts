@@ -2,6 +2,7 @@ import path from "path";
 import { __prod__ } from "./constants";
 import Post from "./models/Post";
 import { MikroORM } from "@mikro-orm/core";
+// import User from "./models/User";
 
 export default {
   migrations: {

@@ -8,7 +8,7 @@
     "dev": "nodemon dist/index.js",
     "start": "node dist/index.js",
     "format": "prettier --write \"**/*.{ts,tsx}\"",
-    "migrate": "npx mikro-orm migration:up --run",
+    "create:migration": "npx mikro-orm migration:create",
     "lint": "eslint . --ext ts --ext tsx",
     "prepare": "husky install"
   },
@@ -36,6 +36,7 @@
     "lint-staged": "^12.3.3",
     "nodemon": "^2.0.15",
     "prettier": "^2.5.1",
+    "ts-node": "^10.5.0",
     "typescript": "^4.5.5"
   },
   "dependencies": {

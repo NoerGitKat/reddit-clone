@@ -1,8 +1,8 @@
 import path from "path";
+import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from "./constants";
 import Post from "./models/Post";
-import { MikroORM } from "@mikro-orm/core";
-// import User from "./models/User";
+import User from "./models/User";
 
 export default {
   migrations: {
@@ -12,5 +12,5 @@ export default {
   dbName: "reddit_clone_db",
   type: "postgresql",
   debug: !__prod__,
-  entities: [Post],
+  entities: [Post, User],
 } as Parameters<typeof MikroORM.init>[0];

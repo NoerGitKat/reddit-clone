@@ -1,6 +1,6 @@
 import Post from "../models/Post";
 import { Ctx, Query, Resolver, Int, Arg, Mutation } from "type-graphql";
-import { PostContext } from "src/types";
+import { EmContext } from "src/types";
 
 @Resolver()
 export default class PostResolver {
@@ -8,7 +8,7 @@ export default class PostResolver {
   async createPost(
     @Arg("title", () => String) title: string,
     @Ctx()
-    { em }: PostContext,
+    { em }: EmContext,
   ): Promise<Post> {
     const newPost = em.create(Post, { title });
     await em.persistAndFlush(newPost);
@@ -16,7 +16,7 @@ export default class PostResolver {
   }
 
   @Query(() => [Post])
-  getPosts(@Ctx() { em }: PostContext): Promise<Post[]> {
+  getPosts(@Ctx() { em }: EmContext): Promise<Post[]> {
     return em.find(Post, {});
   }
 
@@ -24,7 +24,7 @@ export default class PostResolver {
   getPost(
     @Arg("id", () => Int) id: number,
     @Ctx()
-    { em }: PostContext,
+    { em }: EmContext,
   ): Promise<Post | null> {
     return em.findOne(Post, { id });
   }
@@ -33,7 +33,7 @@ export default class PostResolver {
   async updatePost(
     @Arg("id", () => Number) id: number,
     @Arg("title", () => String, { nullable: true }) title: string,
-    @Ctx() { em }: PostContext,
+    @Ctx() { em }: EmContext,
   ): Promise<Post | null> {
     const fetchedPost = await em.findOne(Post, { id });
     if (!fetchedPost) return null;
@@ -45,7 +45,7 @@ export default class PostResolver {
   }
 
   @Mutation(() => Boolean)
-  async deletePost(@Arg("id") id: number, @Ctx() { em }: PostContext): Promise<boolean> {
+  async deletePost(@Arg("id") id: number, @Ctx() { em }: EmContext): Promise<boolean> {
     try {
       const fetchedPost = await em.findOne(Post, { id });
       if (!fetchedPost) return false;

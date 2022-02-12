@@ -1,5 +1,5 @@
 import { Connection, IDatabaseDriver, EntityManager } from "@mikro-orm/core";
 
-export type PostContext = {
+export type EmContext = {
   em: EntityManager<IDatabaseDriver<Connection>>;
 };

@@ -1,6 +1,6 @@
 import path from "path";
 import { __prod__ } from "./constants";
-import { Post } from "./models/Post";
+import Post from "./models/Post";
 import { MikroORM } from "@mikro-orm/core";
 
 export default {
